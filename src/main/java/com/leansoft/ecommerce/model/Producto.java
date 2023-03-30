@@ -24,6 +24,8 @@ public class Producto {
     private int cantidad;
 
     @ManyToOne
+    @ToString.Exclude
     private Usuario usuario;
+
 
 }

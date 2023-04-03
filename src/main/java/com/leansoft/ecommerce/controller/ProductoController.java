@@ -47,16 +47,6 @@ public class ProductoController{
         if (producto.getId()==null){ // cuando se crea un producto nuevo
             String enlaceProd = fileService.saveImage(file);
             producto.setImagen(enlaceProd);
-        }else{ //Si editamos
-            if (file.isEmpty()){//editamos el producto pero no subimos imagen
-                Producto p = new Producto();
-                p = productoService.getById(producto.getId()).get();
-
-                producto.setImagen(p.getImagen());//Asignamos la imagen que ya tenia el Prod. si modificar
-            }else{
-                String enlaceProd = fileService.saveImage(file);
-                producto.setImagen(enlaceProd);
-            }
         }
 
         productoService.save(producto);
@@ -74,13 +64,33 @@ public class ProductoController{
     }
 
     @PostMapping("/update")
-    public String update(Producto producto){
+    public String update(Producto producto, @RequestParam("img")MultipartFile file) throws IOException {
+
+        Producto p = new Producto();
+        p = productoService.getById(producto.getId()).get();
+
+        if (file.isEmpty()){//editamos el producto pero no subimos imagen
+            producto.setImagen(p.getImagen());//Asignamos la imagen que ya tenia el Prod. si modificar
+        }else{
+            if (!p.getImagen().equals("default.jpg")){ //Si la imagen es diferente de default borramos la interior
+                fileService.deleteImage(p.getImagen());
+            }
+            String enlaceProd = fileService.saveImage(file);
+            producto.setImagen(enlaceProd);
+        }
+        producto.setUsuario(p.getUsuario());
         productoService.update(producto);
         return "redirect:/productos";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id){
+        Producto p = new Producto();
+        p=productoService.getById(id).get();
+        if (!p.getImagen().equals("default.jpg")){
+            fileService.deleteImage(p.getImagen());
+        }
+
         productoService.delete(id);
         return "redirect:/productos";
     }

@@ -3,7 +3,9 @@ package com.leansoft.ecommerce.controller;
 import com.leansoft.ecommerce.model.DetalleOrden;
 import com.leansoft.ecommerce.model.Orden;
 import com.leansoft.ecommerce.model.Producto;
+import com.leansoft.ecommerce.model.Usuario;
 import com.leansoft.ecommerce.service.IProductoService;
+import com.leansoft.ecommerce.service.IUsuarioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class HomeController {
 
     @Autowired
     private IProductoService productoService;
+
+    @Autowired
+    private IUsuarioService usuarioService;
 
     private final Logger LOG = LoggerFactory.getLogger(HomeController.class);
     //para almacenar los detalles de la orden
@@ -116,7 +121,12 @@ public class HomeController {
         return "usuario/carrito";
     }
     @GetMapping("/order")
-    public String order(){
+    public String order(Model model){
+        Usuario usuario = usuarioService.findById(1);
+
+        model.addAttribute("carrit",detalleOrdenList);
+        model.addAttribute("orden",orden);
+        model.addAttribute("usuario",usuario);
         return "usuario/resumenorden";
     }
 

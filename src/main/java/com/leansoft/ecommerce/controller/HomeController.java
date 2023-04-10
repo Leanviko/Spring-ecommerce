@@ -4,6 +4,8 @@ import com.leansoft.ecommerce.model.DetalleOrden;
 import com.leansoft.ecommerce.model.Orden;
 import com.leansoft.ecommerce.model.Producto;
 import com.leansoft.ecommerce.model.Usuario;
+import com.leansoft.ecommerce.service.IDetalleOrdenService;
+import com.leansoft.ecommerce.service.IOrdenService;
 import com.leansoft.ecommerce.service.IProductoService;
 import com.leansoft.ecommerce.service.IUsuarioService;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +29,12 @@ public class HomeController {
 
     @Autowired
     private IUsuarioService usuarioService;
+
+    @Autowired
+    private IOrdenService ordenService;
+
+    @Autowired
+    private IDetalleOrdenService detalleOrdenService;
 
     private final Logger LOG = LoggerFactory.getLogger(HomeController.class);
     //para almacenar los detalles de la orden
@@ -128,6 +137,31 @@ public class HomeController {
         model.addAttribute("orden",orden);
         model.addAttribute("usuario",usuario);
         return "usuario/resumenorden";
+    }
+
+    @GetMapping("/saveOrder")
+    public String saveOrder(){
+        Date fechaCreacion = new Date();
+        orden.setFechaCreacion(fechaCreacion);
+        orden.setNumero(ordenService.generarNumeroOrden());
+
+        //Usuario impuesto hasta que hagamos la seguridad
+        Usuario usuario = usuarioService.findById(1);
+
+        orden.setUsuario(usuario);
+        ordenService.save(orden);
+
+        //guardar detalles
+        for (DetalleOrden dt:detalleOrdenList){
+            dt.setOrden(orden);
+            detalleOrdenService.save(dt);
+        }
+
+        //limpiar lista y orden
+        orden = new Orden();
+        detalleOrdenList.clear();
+
+        return "redirect:/";
     }
 
 }

@@ -5,6 +5,8 @@ import com.leansoft.ecommerce.repository.IUsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UsuarioServiceImpl implements IUsuarioService{
 
@@ -19,5 +21,10 @@ public class UsuarioServiceImpl implements IUsuarioService{
     @Override
     public Usuario findById(Integer id) {
         return usuarioRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Optional<Usuario> findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 }

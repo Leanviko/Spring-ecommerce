@@ -49,7 +49,7 @@ public class UsuarioController {
 
 
         if (user.isPresent()){
-            LOG.info("Usuario obtenido de la BD: {}", user.get());
+            //LOG.info("Usuario obtenido de la BD: {}", user.get());
             session.setAttribute("idusuario", user.get().getId());
             if (user.get().getTipo().equals("ADMIN")){
                 return "redirect:/administrador";

@@ -3,6 +3,7 @@ package com.leansoft.ecommerce.controller;
 import com.leansoft.ecommerce.model.Producto;
 import com.leansoft.ecommerce.model.Usuario;
 import com.leansoft.ecommerce.service.IProductoService;
+import com.leansoft.ecommerce.service.IUsuarioService;
 import com.leansoft.ecommerce.service.UploadFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -23,6 +25,8 @@ public class ProductoController{
 
     @Autowired
     private IProductoService productoService;
+    @Autowired
+    private IUsuarioService usuarioService;
     @Autowired
     private UploadFileService fileService;
 
@@ -38,9 +42,10 @@ public class ProductoController{
     }
 
     @PostMapping("/save")
-    public String save(Producto producto, @RequestParam("img")MultipartFile file) throws IOException {
+    public String save(Producto producto, @RequestParam("img")MultipartFile file, HttpSession session) throws IOException {
         LOGGER.info("Este es el objeto producto {}",producto);
-        Usuario u = new Usuario(1,"","","","","","","",null,null);
+
+        Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString()));
         producto.setUsuario(u);
 
         //imagen

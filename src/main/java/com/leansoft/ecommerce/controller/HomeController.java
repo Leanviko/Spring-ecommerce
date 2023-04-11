@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,9 +42,11 @@ public class HomeController {
     //para almacenar los detalles de la orden
     List<DetalleOrden> detalleOrdenList = new ArrayList<>();
     Orden orden = new Orden();//datos de la orden
-    @GetMapping("")
-    public String home(Model model){
 
+    @GetMapping("")
+    public String home(Model model, HttpSession session){
+
+        LOG.info("Sesion del usuario: {}",session.getAttribute("idusuario"));
         model.addAttribute("productos", productoService.getAll());
 
         return "usuario/home";
@@ -131,8 +134,8 @@ public class HomeController {
         return "usuario/carrito";
     }
     @GetMapping("/order")
-    public String order(Model model){
-        Usuario usuario = usuarioService.findById(1);
+    public String order(Model model, HttpSession session){
+        Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString()));
 
         model.addAttribute("carrit",detalleOrdenList);
         model.addAttribute("orden",orden);
@@ -141,13 +144,13 @@ public class HomeController {
     }
 
     @GetMapping("/saveOrder")
-    public String saveOrder(){
+    public String saveOrder(HttpSession session){
         Date fechaCreacion = new Date();
         orden.setFechaCreacion(fechaCreacion);
         orden.setNumero(ordenService.generarNumeroOrden());
 
         //Usuario impuesto hasta que hagamos la seguridad
-        Usuario usuario = usuarioService.findById(1);
+        Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString()));
 
         orden.setUsuario(usuario);
         ordenService.save(orden);

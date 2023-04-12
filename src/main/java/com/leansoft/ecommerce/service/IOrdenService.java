@@ -12,4 +12,5 @@ public interface IOrdenService {
     List<Orden> findAll();
     String generarNumeroOrden();
     List<Orden> findByUsuario (Usuario usuario);
+    Orden findById(Integer id);
 }

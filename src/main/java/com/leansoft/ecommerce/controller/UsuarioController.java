@@ -1,6 +1,8 @@
 package com.leansoft.ecommerce.controller;
 
+import com.leansoft.ecommerce.model.Orden;
 import com.leansoft.ecommerce.model.Usuario;
+import com.leansoft.ecommerce.service.IOrdenService;
 import com.leansoft.ecommerce.service.IUsuarioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -22,6 +25,8 @@ public class UsuarioController {
 
     @Autowired
     private IUsuarioService usuarioService;
+    @Autowired
+    private IOrdenService ordenService;
 
     // "/usuario/registro"
     @GetMapping("/registro")
@@ -64,6 +69,10 @@ public class UsuarioController {
     @GetMapping("/compras")
     public String obtenerCompras(Model model, HttpSession session){
         model.addAttribute("sesion",session.getAttribute("idusuario"));
+
+        Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString()));
+        List<Orden> ordenes = ordenService.findByUsuario(usuario);
+        model.addAttribute("ordenes", ordenes);
         return "usuario/compras";
     }
 }
